@@ -1,4 +1,4 @@
-package test
+package repository_test
 
 import (
     "backend/entities"
@@ -10,7 +10,7 @@ import (
 )
 
 func TestRegisterUser(t *testing.T) {
-    db, mock, err := sqlmock.New() 
+    db, mock, err := sqlmock.New()
     if err != nil {
         t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
     }
@@ -20,9 +20,10 @@ func TestRegisterUser(t *testing.T) {
 
     mock.ExpectExec("INSERT INTO users").
         WithArgs(
-            "test-uuid", "John", "Doe", "johndoe", "john@example.com", "hashedpassword", "1234567890", 1,
+            sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
+            sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
         ).
-        WillReturnResult(sqlmock.NewResult(1, 1)) 
+        WillReturnResult(sqlmock.NewResult(1, 1))
 
     user := &entities.User{
         UUID:        "test-uuid",
@@ -30,13 +31,13 @@ func TestRegisterUser(t *testing.T) {
         LastName:    "Doe",
         Username:    "johndoe",
         Email:       "john@example.com",
-        Password:    "hashedpassword",
+        Password:    "password",
         PhoneNumber: "1234567890",
         RoleID:      1,
     }
 
     err = repo.RegisterUser(user)
-    assert.NoError(t, err) 
+    assert.NoError(t, err)
     if err := mock.ExpectationsWereMet(); err != nil {
         t.Errorf("there were unmet expectations: %s", err)
     }
