@@ -1,22 +1,22 @@
-// RegistrationForm.test.tsx
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import RegistrationForm from '../RegistrationForm';
+import '@testing-library/jest-dom';
+
 
 test('registers a user', async () => {
   render(<RegistrationForm />);
 
-  fireEvent.change(screen.getByLabelText('First Name'), { target: { value: 'John' } });
-  fireEvent.change(screen.getByLabelText('Last Name'), { target: { value: 'Doe' } });
-  fireEvent.change(screen.getByLabelText('Username'), { target: { value: 'johndoe' } });
-  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'john@example.com' } });
-  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password' } });
-  fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '1234567890' } });
+  userEvent.type(screen.getByLabelText('First Name'), 'John');
+  userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
+  userEvent.type(screen.getByLabelText('Username'), 'johndoe');
+  userEvent.type(screen.getByLabelText('Email'), 'john@example.com');
+  userEvent.type(screen.getByLabelText('Password'), 'password');
+  userEvent.type(screen.getByLabelText('Phone Number'), '1234567890');
 
-  fireEvent.click(screen.getByRole('button', { name: 'Register' }));
+  userEvent.click(screen.getByRole('button', { name: /Register/i }));
 
   await waitFor(() => {
     expect(screen.getByText('Registration successful')).toBeInTheDocument();
   });
 });
-
