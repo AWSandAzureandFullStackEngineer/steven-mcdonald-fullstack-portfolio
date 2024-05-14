@@ -1,5 +1,5 @@
-import axios from 'axios';
-import React, { useState } from 'react';
+import axios from "axios";
+import React, { useState } from "react";
 
 const RegistrationForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const RegistrationForm: React.FC = () => {
     password: "",
     phone_number: "",
   });
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -23,7 +24,8 @@ const RegistrationForm: React.FC = () => {
         "http://localhost:8081/register",
         formData
       );
-      console.log('Registration successful');
+      console.log(response.data);
+      setRegistrationSuccess(true);
     } catch (error) {
       console.error("Registration failed:", error);
     }
@@ -31,6 +33,9 @@ const RegistrationForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+      {registrationSuccess && (
+        <div className="text-green-500">Registration successful</div>
+      )}
       <div className="mb-4">
         <label
           htmlFor="first_name"
