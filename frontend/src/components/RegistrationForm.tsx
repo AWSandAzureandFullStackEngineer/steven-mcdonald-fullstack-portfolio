@@ -23,7 +23,7 @@ const RegistrationForm: React.FC = () => {
         "http://localhost:8081/register",
         formData
       );
-      console.log(response.data);
+      console.log('Registration successful');
     } catch (error) {
       console.error("Registration failed:", error);
     }
