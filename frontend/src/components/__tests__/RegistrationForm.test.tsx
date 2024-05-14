@@ -19,3 +19,4 @@ test('registers a user', async () => {
     expect(screen.getByText('Registration successful')).toBeInTheDocument();
   });
 });
+
