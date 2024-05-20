@@ -13,3 +13,21 @@ variable "private-db-subnet-az2-cider" {}
 # ECS
 
 variable "cluster_name" {}
+
+# ECS TASK
+variable "family" {}
+variable "cpu_size" {}
+variable "memory_size" {}
+variable "container_name" {}
+variable "image" {}
+variable "container_port" {}
+
+# ECS SERVICE
+variable "service_name" {}
+
+# RDS POSTGRESQL
+variable "engine_version" {}
+variable "instance_class" {}
+variable "db_name" {}
+variable "username" {}
+variable "password" {}
