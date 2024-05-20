@@ -43,8 +43,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS secret access key
           GITHUB_RUN_NUMBER: ${{ github.run_number }}  # Unique identifier for the workflow run
 
-      - name: Log in to AWS ECR  # Log in to AWS ECR
-        run: $(aws ecr get-login --no-include-email --region $AWS_REGION)
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image for backend  # Build Docker image for the backend
         run: |
