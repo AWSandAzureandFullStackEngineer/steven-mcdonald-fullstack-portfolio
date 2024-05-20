@@ -16,5 +16,11 @@ module "vpc" {
   private-app-subnet-az2-cider = var.private-app-subnet-az2-cider
   private-db-subnet-az1-cider  = var.private-db-subnet-az1-cider
   private-db-subnet-az2-cider  = var.private-db-subnet-az2-cider
+}
 
+module "ecs_cluster" {
+  source       = "../../modules/ecs-cluster"
+  cluster_name = var.cluster_name
+  environment  = local.environment
+  project_name = local.project_name
 }

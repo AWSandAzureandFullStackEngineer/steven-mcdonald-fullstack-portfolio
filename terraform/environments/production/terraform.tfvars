@@ -9,3 +9,7 @@ private-app-subnet-az1-cider = "10.0.3.0/24"
 private-app-subnet-az2-cider = "10.0.4.0/24"
 private-db-subnet-az1-cider  = "10.0.5.0/24"
 private-db-subnet-az2-cider  = "10.0.6.0/24"
+
+#ECS
+
+cluster_name = "steven-mcdonald-fullstack-portfolio-cluster"

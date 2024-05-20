@@ -9,3 +9,7 @@ variable "private-app-subnet-az1-cider" {}
 variable "private-app-subnet-az2-cider" {}
 variable "private-db-subnet-az1-cider" {}
 variable "private-db-subnet-az2-cider" {}
+
+# ECS
+
+variable "cluster_name" {}
