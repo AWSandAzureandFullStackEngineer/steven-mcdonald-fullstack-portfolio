@@ -7,33 +7,90 @@ on:
       - completed
 
 jobs:
-  build:
+  build-backend:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Go
+      - uses: actions/checkout@v2 # Check out the repository
+
+      - name: Cache Go modules # Cache Go modules to speed up builds
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Set up Go # Set up Go environment
         uses: actions/setup-go@v2
         with:
           go-version: "1.22"
-      - name: Build backend
+
+      - name: Build backend # Build the backend Go application
         run: go build -v ./...
         working-directory: backend
-      - name: Test backend
+
+      - name: Test backend # Run tests for the backend
         run: go test -v ./...
         working-directory: backend
-      - name: Set up Node
+
+      - name: Build Docker image for backend # Build Docker image for the backend
+        run: |
+          docker build -t 339713093076.dkr.ecr.us-east-1.amazonaws.com/golang:latest .
+          docker tag 339713093076.dkr.ecr.us-east-1.amazonaws.com/golang:latest 339713093076.dkr.ecr.us-east-1.amazonaws.com/golang:$GITHUB_RUN_NUMBER
+        env:
+          AWS_REGION: 339713093076 # AWS region
+          AWS_ACCOUNT_ID: 339713093076 # AWS account ID
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} # AWS access key ID
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS secret access key
+          GITHUB_RUN_NUMBER: ${{ github.run_number }} # Unique identifier for the workflow run
+
+      - name: Log in to AWS ECR # Log in to AWS ECR
+        run: $(aws ecr get-login --no-include-email --region $AWS_REGION)
+
+      - name: Push Docker image for backend # Push Docker image to AWS ECR
+        run: docker push 339713093076.dkr.ecr.us-east-1.amazonaws.com/golang:latest
+
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2 # Check out the repository
+
+      - name: Cache Node modules # Cache Node modules to speed up builds
+        uses: actions/cache@v2
+        with:
+          path: ~/.yarn/cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Set up Node # Set up Node.js environment
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
-      - name: Install Yarn
+
+      - name: Install Yarn # Install Yarn package manager
         run: npm install -g yarn
-      - name: Install frontend dependencies
+
+      - name: Install frontend dependencies # Install frontend dependencies using Yarn
         run: yarn install --frozen-lockfile
-        working-directory: ./frontend
-      - name: Build frontend
+        working-directory: frontend
+
+      - name: Build frontend # Build the frontend application
         run: yarn build
-        working-directory: ./frontend
-      - name: Test frontend
-        run: yarn test
-        working-directory: ./frontend
+        working-directory: frontend
+
+      - name: Build Docker image for frontend # Build Docker image for the frontend
+        run: |
+          docker build -t 339713093076.dkr.ecr.us-east-1.amazonaws.com/frontend:latest .
+          docker tag 339713093076.dkr.ecr.us-east-1.amazonaws.com/frontend:latest 339713093076.dkr.ecr.us-east-1.amazonaws.com/frontend:$GITHUB_RUN_NUMBER
+        env:
+          AWS_REGION: 339713093076 # AWS region
+          AWS_ACCOUNT_ID: 339713093076 # AWS account ID
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} # AWS access key ID
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS secret access key
+          GITHUB_RUN_NUMBER: ${{ github.run_number }} # Unique identifier for the workflow run
+
+      - name: Push Docker image for frontend # Push Docker image to AWS ECR
+        run: docker push your-aws-account-id.dkr.ecr.your-region.amazonaws.com/frontend:latest
