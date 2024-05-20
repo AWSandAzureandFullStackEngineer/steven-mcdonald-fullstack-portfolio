@@ -44,7 +44,9 @@ jobs:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}  # Unique identifier for the workflow run
 
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+  
 
       - name: Build Docker image for backend  # Build Docker image for the backend
         run: |
