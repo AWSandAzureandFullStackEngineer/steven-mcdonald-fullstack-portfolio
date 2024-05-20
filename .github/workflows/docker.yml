@@ -1,26 +1,38 @@
-name: Docker
-
 on:
-  workflow_run:
-    workflows: ["Continuous Integration"]
-    types:
-      - completed
+ workflow_run:
+   workflows: ["Continuous Integration"]
+   types:
+     - completed
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+ deploy:
+   name: Deploy
+   runs-on: ubuntu-latest
 
-    steps:
-    - name: 'Get Login to AWS ECR'
-      id: ecr-login
-      uses: thalesvon/ecr-login@master
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_DEFAULT_OUTPUT: json
-        AWS_REGION: us-east-1
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      with:
-        args: 'get-login --no-include-email --region ${AWS_REGION}'
-    - name: 'Docker Login'
-      run: ${{ steps. ecr-login.outputs.login-string }} 
-    
+   steps:
+   - name: Checkout
+     uses: actions/checkout@v2
+
+   - name: Configure AWS credentials
+     uses: aws-actions/configure-aws-credentials@v1
+     with:
+       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: us-east-1
+
+   - name: Login to Amazon ECR
+     id: login-ecr
+     uses: aws-actions/amazon-ecr-login@v1
+
+   - name: Build, tag, and push the image to Amazon ECR
+     id: build-image
+     env:
+       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+       ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+       IMAGE_TAG: latest
+     run: |
+       # Build a docker container and push it to ECR 
+       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+       echo "Pushing image to ECR..."
+       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+       echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
