@@ -4,25 +4,42 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
 
-      - name: Terraform Init
-        run: terraform init
+    - name: Terraform Init
+      working-directory: terraform/environments/production
+      run: terraform init
 
-      - name: Terraform Plan
-        run: terraform plan
+    - name: Terraform Validate
+      working-directory: terraform/environments/production
+      run: terraform validate
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+    - name: Terraform Plan
+      working-directory: terraform/environments/production
+      run: terraform plan -out=tfplan
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      working-directory: terraform/environments/production
+      run: terraform apply -auto-approve tfplan
+
+    - name: Terraform Apply (PR)
+      if: github.event_name == 'pull_request'
+      working-directory: terraform/environments/production
+      run: terraform apply -auto-approve tfplan
