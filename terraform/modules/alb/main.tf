@@ -16,7 +16,7 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.alb.arn
   }
 }
@@ -35,12 +35,4 @@ resource "aws_lb_target_group" "alb" {
     unhealthy_threshold = 2
     matcher             = "200-299"
   }
-}
-
-output "alb_dns_name" {
-  value = aws_lb.alb.dns_name
-}
-
-output "target_group_arn" {
-  value = aws_lb_target_group.alb.arn
 }

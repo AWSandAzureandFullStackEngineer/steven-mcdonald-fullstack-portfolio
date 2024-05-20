@@ -1,17 +1,7 @@
 data "aws_iam_policy_document" "engineers_assume_role_policy" {
   statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "engineers_assume_role_policy" {
-  statement {
     actions = [
+      "sts:AssumeRole",
       "ecs:CreateCluster",
       "ecs:DeregisterContainerInstance",
       "ecs:DiscoverPollEndpoint",
@@ -23,12 +13,12 @@ data "aws_iam_policy_document" "engineers_assume_role_policy" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
     resources = ["*"]
   }
-}
-
-data "aws_iam" "" {
-
 }
 
 resource "aws_iam_policy" "engineers_task_role_policy" {

@@ -4,7 +4,7 @@ resource "aws_ecs_service" "service" {
   task_definition = var.task_definition_arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
-  
+
   network_configuration {
     subnets          = var.subnets
     security_groups  = var.security_groups
@@ -24,8 +24,4 @@ resource "aws_lb_target_group_attachment" "service" {
   target_group_arn = var.target_group_arn
   target_id        = aws_ecs_service.service.id
   port             = var.container_port
-}
-
-output "service_name" {
-  value = aws_ecs_service.service.name
 }
