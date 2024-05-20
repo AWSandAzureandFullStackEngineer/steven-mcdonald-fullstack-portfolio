@@ -1,0 +1,11 @@
+region = "us-west-2"
+project_name = "my-project"
+environment = "dev"
+
+vpc_cider = "10.0.0.0/16"
+public_subnet-az1-cider = "10.0.1.0/24"
+public_subnet-az2-cider = "10.0.2.0/24"
+private-app-subnet-az1-cider = "10.0.3.0/24"
+private-app-subnet-az2-cider = "10.0.4.0/24"
+private-db-subnet-az1-cider = "10.0.5.0/24"
+private-db-subnet-az2-cider = "10.0.6.0/24"
