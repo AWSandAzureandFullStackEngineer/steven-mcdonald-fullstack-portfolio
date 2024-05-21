@@ -49,11 +49,6 @@ jobs:
       working-directory: terraform/environments/production
       run: terraform plan -out=tfplan
 
-    - name: Terraform Destroy
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      working-directory: terraform/environments/production
-      run: terraform destroy -auto-approve
-
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       working-directory: terraform/environments/production
