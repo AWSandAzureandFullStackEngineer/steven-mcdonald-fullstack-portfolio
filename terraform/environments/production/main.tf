@@ -21,3 +21,18 @@ module "vpc" {
   private_db_subnet_az2_cidr  = var.private-db-subnet-az2-cider
 }
 
+module "nat-gateway" {
+  source       = "../../modules/nat-gateway"
+  region       = local.region
+  project_name = local.project_name
+  environment  = local.environment
+
+  public_subnet-az1_id       = module.vpc.public_subnet-az1_id
+  public_subnet-az2_id       = module.vpc.public_subnet-az2_id
+  engineers-internet-gateway = module.vpc.aws_internet_gateway_id
+  vpc_id                     = module.vpc.vpc_id
+  private-app-subnet-az1_id  = module.vpc.private-app-subnet-az1_id
+  private-db-subnet-az1_id   = module.vpc.private-db-subnet-az1_id
+  private-app-subnet-az2_id  = module.vpc.private-app-subnet-az2_id
+  private-db-subnet-az2_id   = module.vpc.private-db-subnet-az2_id
+} 
