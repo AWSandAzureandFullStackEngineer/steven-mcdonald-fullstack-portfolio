@@ -8,6 +8,7 @@ variable "subnets" {
 variable "security_groups" {
   type = list(string)
 }
+variable "assign_public_ip" {}
 variable "target_group_arn" {}
 variable "container_name" {}
 variable "container_port" {}

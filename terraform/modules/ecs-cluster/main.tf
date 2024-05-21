@@ -1,8 +1,7 @@
-resource "aws_ecs_cluster" "ecs_cluster" {
+resource "aws_ecs_cluster" "cluster" {
   name = var.cluster_name
 
   tags = {
-    Environment = var.environment
-    Project     = var.project_name
+    Name = var.cluster_name
   }
 }

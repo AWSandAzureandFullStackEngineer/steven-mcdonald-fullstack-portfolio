@@ -1,53 +1,86 @@
+# Define local variables
 locals {
   region       = var.region
   project_name = var.project_name
   environment  = var.environment
 }
 
+# VPC module
 module "vpc" {
-  source                       = "../../modules/vpc"
-  region                       = local.region
-  project_name                 = local.project_name
-  environment                  = local.environment
-  vpc_cider                    = var.vpc_cider
-  public_subnet-az1-cider      = var.public_subnet-az1-cider
-  public_subnet-az2-cider      = var.public_subnet-az2-cider
-  private-app-subnet-az1-cider = var.private-app-subnet-az1-cider
-  private-app-subnet-az2-cider = var.private-app-subnet-az2-cider
-  private-db-subnet-az1-cider  = var.private-db-subnet-az1-cider
-  private-db-subnet-az2-cider  = var.private-db-subnet-az2-cider
+  source = "../../modules/vpc"
+
+  region                      = local.region
+  project_name                = local.project_name
+  environment                 = local.environment
+  vpc_cidr                    = var.vpc_cider
+  public_subnet_az1_cidr      = var.public_subnet-az1-cider
+  public_subnet_az2_cidr      = var.public_subnet-az2-cider
+  private_app_subnet_az1_cidr = var.private-app-subnet-az1-cider
+  private_app_subnet_az2_cidr = var.private-app-subnet-az2-cider
+  private_db_subnet_az1_cidr  = var.private-db-subnet-az1-cider
+  private_db_subnet_az2_cidr  = var.private-db-subnet-az2-cider
 }
 
+# ACM module
+module "ssl-certificate" {
+  source            = "../../modules/acm"
+  alternative_names = var.alternative_names
+  domain_name       = var.domain_name
+}
+
+# CloudFront module
+module "cloudfront" {
+  source              = "../../modules/cloudfront"
+  project_name        = local.project_name
+  environment         = local.environment
+  acm_certificate_arn = module.acm.acm_certificate_arn
+}
+
+# S3 module
+module "s3" {
+  source       = "../../modules/s3"
+  project_name = local.project_name
+  environment  = local.environment
+}
+
+# ECS Cluster module
 module "ecs_cluster" {
   source       = "../../modules/ecs-cluster"
   cluster_name = var.cluster_name
-  environment  = local.environment
-  project_name = local.project_name
 }
 
+# Security Groups module
 module "security_groups" {
-  source              = "../../modules/security-groups"
-  project_name        = local.project_name
-  environment         = local.environment
-  vpc_id              = module.vpc.vpc_id
-  allowed_cidr_blocks = ["0.0.0.0/0"]
+  source         = "../../modules/security-groups"
+  project_name   = local.project_name
+  environment    = local.environment
+  container_port = var.container_port
+  vpc_id         = module.vpc.vpc_id
 }
 
+# Application Load Balancer (ALB) module
 module "alb" {
-  source          = "../../modules/alb"
-  project_name    = local.project_name
-  environment     = local.environment
-  subnets         = [module.vpc.public_subnet-az1_id, module.vpc.public_subnet-az2_id]
-  security_groups = [module.security_groups.ecs_security_group_id]
-  vpc_id          = module.vpc.vpc_id
+  source                = "../../modules/alb"
+  project_name          = local.project_name
+  environment           = local.environment
+  vpc_id                = module.vpc.vpc_id
+  target_type           = var.target_type
+  public_subnet_az1_id  = module.vpc.public_subnet_az1_id
+  public_subnet_az2_id  = module.vpc.public_subnet_az2_id
+  alb_security_group_id = module.security_groups.alb_security_group_id
+  certificate_arn       = module.ssl-certificate.certificate_arn
+
 }
 
+
+# IAM Role module
 module "aws_iam_role" {
   source       = "../../modules/iam-role"
   project_name = local.project_name
   environment  = local.environment
 }
 
+# ECS Task module
 module "ecs_task" {
   source             = "../../modules/ecs-task"
   family             = var.family
@@ -61,30 +94,31 @@ module "ecs_task" {
   task_role_arn      = module.aws_iam_role.task_role_arn
 }
 
+# ECS Service module
 module "ecs_service" {
   source              = "../../modules/ecs-service"
   service_name        = var.service_name
   cluster_id          = module.ecs_cluster.ecs_cluster_id
   task_definition_arn = module.ecs_task.task_definition_arn
   desired_count       = 2
-  subnets             = [module.vpc.public_subnet-az1_id, module.vpc.public_subnet-az2_id]
+  assign_public_ip    = true
+  subnets             = [module.vpc.public_subnet_az1_id, module.vpc.public_subnet_az2_id]
   security_groups     = [module.security_groups.ecs_security_group_id]
   target_group_arn    = module.alb.target_group_arn
   container_name      = module.ecs_task.container_name
-  container_port      = 80
+  container_port      = 8080
 }
 
+# RDS module
 module "rds" {
-  source            = "../../modules/rds-postgresql"
-  project_name      = local.project_name
-  environment       = local.environment
-  allocated_storage = 20
-  engine_version    = var.engine_version
-  instance_class    = var.instance_class
-  db_name           = var.db_name
-  username          = var.username
-  password          = var.password
-  security_group_id = module.security_groups.rds_security_group_id
-  subnet_group_name = module.rds_subnet_group_name
-  subnet_ids        = [module.vpc.private-db-subnet-az1_id, module.vpc.private-db-subnet-az2_id]
+  source                 = "../../modules/rds-postgresql"
+  project_name           = local.project_name
+  environment            = local.environment
+  engine_version         = var.engine_version
+  instance_class         = var.instance_class
+  vpc_security_group_ids = module.security_groups.rds_security_group_id
+  db_name                = var.db_name
+  username               = var.username
+  password               = var.password
+  subnet_ids             = [module.vpc.private_db_subnet_az1_id, module.vpc.private_db_subnet_az2_id]
 }

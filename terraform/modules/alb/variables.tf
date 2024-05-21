@@ -1,9 +1,8 @@
 variable "project_name" {}
 variable "environment" {}
-variable "subnets" {
-  type = list(string)
-}
-variable "security_groups" {
-  type = list(string)
-}
 variable "vpc_id" {}
+variable "target_type" {}
+variable "public_subnet_az1_id" {}
+variable "public_subnet_az2_id" {}
+variable "alb_security_group_id" {}
+variable "certificate_arn" {}

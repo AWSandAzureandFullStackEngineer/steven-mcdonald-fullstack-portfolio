@@ -2,21 +2,24 @@ resource "aws_ecs_task_definition" "task" {
   family                   = var.family
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.cpu
-  memory                   = var.memory
+  cpu                      = var.cpu_size
+  memory                   = var.memory_size
 
   container_definitions = jsonencode([
     {
       name      = var.container_name
       image     = var.image
+      cpu       = var.cpu_size
+      memory    = var.memory_size
       essential = true
       portMappings = [
         {
           containerPort = var.container_port
           hostPort      = var.container_port
+          protocol      = "tcp"
         }
       ]
-      environment = var.environment
+      environment = var.environment_variables
     }
   ])
 
