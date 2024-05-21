@@ -46,13 +46,31 @@ jobs:
       run: terraform validate
 
     - name: Terraform Plan
+      id: tfplan
       working-directory: terraform/environments/production
       run: terraform plan -out=tfplan
 
+    - name: Check if plan has changes
+      id: plancheck
+      working-directory: terraform/environments/production
+      run: |
+        terraform show -json tfplan | jq -e '.resource_changes | length > 0'
+      continue-on-error: true
+
     - name: Terraform Destroy
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: steps.plancheck.outcome == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push'
       working-directory: terraform/environments/production
       run: terraform destroy -auto-approve
+
+    - name: Terraform Re-Init after Destroy
+      if: steps.plancheck.outcome == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+      working-directory: terraform/environments/production
+      run: terraform init
+
+    - name: Terraform Re-Plan after Destroy
+      if: steps.plancheck.outcome == 'success' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+      working-directory: terraform/environments/production
+      run: terraform plan -out=tfplan
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
