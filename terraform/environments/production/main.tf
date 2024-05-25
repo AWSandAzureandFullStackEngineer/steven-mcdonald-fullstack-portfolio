@@ -43,3 +43,22 @@ module "security_groups" {
   environment  = local.environment
   vpc_id       = module.vpc.vpc_id
 }
+
+module "acm" {
+  source          = "../../modules/acm"
+  project_name    = local.project_name
+  environment     = local.environment
+  domain_name     = var.domain_name
+  route53_zone_id = var.route53_zone_id
+}
+
+module "alb" {
+  source                = "../../modules/alb"
+  project_name          = local.project_name
+  environment           = local.environment
+  alb_security_group_id = module.security_groups.alb_security_group_id
+  public_subnet_ids     = [module.vpc.public_subnet_az1_id, module.vpc.public_subnet_az2_id]
+  target_type           = "ip"
+  vpc_id                = module.vpc.vpc_id
+  certificate_arn       = module.acm.certificate_arn
+}
