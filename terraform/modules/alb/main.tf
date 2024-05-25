@@ -1,10 +1,9 @@
 resource "aws_lb" "engineers_application_load_balancer" {
-  name                       = "${var.project_name}-alb"
-  internal                   = false
-  load_balancer_type         = "application"
-  security_groups            = [var.alb_security_group_id]
-  subnets                    = var.public_subnet_ids
-  enable_deletion_protection = false
+  name               = "${var.project_name}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [var.alb_security_group_id]
+  subnets            = [var.public_subnet_az1_id, var.public_subnet_az2_id]
 
   tags = {
     Name = "${var.project_name}-${var.environment}-application-load-balancer"

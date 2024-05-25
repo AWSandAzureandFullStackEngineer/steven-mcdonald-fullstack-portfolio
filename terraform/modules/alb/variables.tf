@@ -13,9 +13,14 @@ variable "alb_security_group_id" {
   type        = string
 }
 
-variable "public_subnet_ids" {
-  description = "List of public subnet IDs"
-  type        = list(string)
+variable "public_subnet_az1_id" {
+  description = "The first public subnet ID"
+  type        = string
+}
+
+variable "public_subnet_az2_id" {
+  description = "The second public subnet ID"
+  type        = string
 }
 
 variable "target_type" {
