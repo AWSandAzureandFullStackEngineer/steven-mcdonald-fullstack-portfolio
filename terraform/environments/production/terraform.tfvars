@@ -1,5 +1,5 @@
 region       = "us-east-1"
-project_name = "steven-mcdonald-fullstack-portfolio"
+project_name = "steven-portfolio"
 environment  = "production"
 
 vpc_cider                    = "10.0.0.0/16"
@@ -10,5 +10,5 @@ private-app-subnet-az2-cider = "10.0.4.0/24"
 private-db-subnet-az1-cider  = "10.0.5.0/24"
 private-db-subnet-az2-cider  = "10.0.6.0/24"
 
-domain_name = "engineerscentralhub.tech"
+domain_name     = "engineerscentralhub.tech"
 route53_zone_id = "Z1VH4OJGK7LJ6L"
