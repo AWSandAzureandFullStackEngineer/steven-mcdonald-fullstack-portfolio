@@ -1,13 +1,15 @@
 # get hosted zone details
 data "aws_route53_zone" "hosted_zone" {
-  name = var.domain_name
+  name         = var.domain_name
+  private_zone = false
+
 }
 
 # create a record set in route 53
 resource "aws_route53_record" "site_domain" {
   zone_id = data.aws_route53_zone.hosted_zone.zone_id
   name    = var.record_name
-  type    = "A"
+  type    = "CNAME"
 
   alias {
     name                   = aws_lb.application_load_balancer.dns_name

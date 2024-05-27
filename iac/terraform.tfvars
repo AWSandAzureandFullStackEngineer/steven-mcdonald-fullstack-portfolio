@@ -36,3 +36,4 @@ image_tag    = "latest"
 
 # route-53 variables
 record_name = "www"
+zone_id = "Z06475442THMROXXB0UW"
