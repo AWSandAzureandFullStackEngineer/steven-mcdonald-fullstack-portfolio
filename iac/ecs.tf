@@ -40,8 +40,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 8080
+          hostPort      = 8080
         }
       ]
 
@@ -90,6 +90,6 @@ resource "aws_ecs_service" "ecs_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.alb_target_group.arn
     container_name   = "${var.project_name}-${var.environment}-container"
-    container_port   = 80
+    container_port   = 8080
   }
 }

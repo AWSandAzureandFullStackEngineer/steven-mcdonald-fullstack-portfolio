@@ -11,7 +11,7 @@ resource "aws_db_subnet_group" "database_subnet_group" {
 
 # create the rds instance
 resource "aws_db_instance" "database_instance" {
-  engine                 = "postgresql"
+  engine                 = "postgres"
   engine_version         = "16.2"
   multi_az               = var.multi_az_deployment
   identifier             = var.database_instance_identifier

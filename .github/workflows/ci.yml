@@ -2,7 +2,7 @@ name: Continuous Integration
 
 on:
   workflow_run:
-    workflows: ["Terraform"]
+    workflows: ["Deploy Pipeline"]
     types:
       - completed
 
