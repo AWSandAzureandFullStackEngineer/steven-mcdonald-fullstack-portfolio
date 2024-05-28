@@ -184,9 +184,9 @@ jobs:
           instances=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=ec2-github-runner" "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].InstanceId' --output text)
 
           if [ -n "$instances" ]; then
-            echo "runner-running=true" >> $GITHUB_ENV
+          echo "runner-running=true" >> $GITHUB_ENV
           else
-            echo "runner-running=false" >> $GITHUB_ENV
+          echo "runner-running=false" >> $GITHUB_ENV
           fi
 
       - name: Start EC2 runner
@@ -209,3 +209,6 @@ jobs:
     outputs:
       label: ${{ steps.start-ec2-runner.outputs.label }}
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
+
+
+  
