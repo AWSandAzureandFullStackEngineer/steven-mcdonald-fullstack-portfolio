@@ -30,10 +30,10 @@ env_file_bucket_name = "steven-engineer-production-portfolio"
 env_file_name        = "env-variables-file.env"
 
 # ecs variables
-architecture = "X86_64"
+architecture = "ARM64"
 image_name   = "golang-backend"
 image_tag    = "latest"
 
 # route-53 variables
 record_name = "www"
-zone_id = "Z06475442THMROXXB0UW"
+zone_id     = "Z06475442THMROXXB0UW"
