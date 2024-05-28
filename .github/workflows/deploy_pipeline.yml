@@ -179,7 +179,8 @@ jobs:
       if: needs.deploy_aws_infrastructure.outputs.terraform_action == 'apply'
       runs-on: ubuntu-latest
       env:
-        AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE: '1'
+        AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE: 1
+        runner-running: false
       steps:
         - name: Check for running EC2 runner
           run: |
